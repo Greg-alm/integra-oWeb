@@ -29,10 +29,24 @@ def criar_cadastro():
     sobrenome= request.form['sobrenome']
     idade = request.form['idade']
 
-#CRIAR CONEXÃO COM O BANCO DE DADOS
-    connect = mysql.connector.connect(**bd_config)
 
-#leva instruções SQL do python até o banco de dados
-    caminho = connect.cursor()
+    try:
+    #CRIAR CONEXÃO COM O BANCO DE DADOS
+        connect = mysql.connector.connect(**bd_config)
 
-    query = "INSERT INTO cliente1 (CPF, PRIMEIRO_NOME,SOBRENOME,IDADE)"
+    #leva instruções SQL do python até o banco de dados
+        caminho = connect.cursor()
+
+        query = "INSERT INTO cliente1 (CPF, PRIMEIRO_NOME,SOBRENOME,IDADE) VALUE (%s,%s,%s,%s)"
+        caminho.execute(query(cpf,primeiro_nome,sobrenome,idade))
+
+        #salvar as auterações
+        caminho.commit()
+
+        #fechar o cursor
+        caminho.close()
+
+        #fechar a conexão do banco de dados
+        connect.close()
+    except mysql.connector.error as err:
+        return f"Erro ao gravar no banco: {err}"
